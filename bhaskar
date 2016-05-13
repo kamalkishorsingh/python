@@ -47,4 +47,3 @@ print "Data  Successfully Inserted."
 print ""
 columns = str(sheet.ncols)
 rows = str(sheet.nrows)
-~                                                                                        
