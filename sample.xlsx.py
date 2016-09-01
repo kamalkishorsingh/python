@@ -9,7 +9,7 @@ book = xlrd.open_workbook("FSS.xlsx")
 sheet = book.sheet_by_name("Sheet1")
 
 # Establish a MySQL connection
-database = mysql.connector.connect (host="127.0.0.1", user = "root", passwd = "kamal", db = "mydata")
+database = mysql.connector.connect (host="127.0.0.1", user = "root", passwd = "*****", db = "mydata")
 
 # Get the cursor, which is used to traverse the database, line by line
 cursor = database.cursor()
