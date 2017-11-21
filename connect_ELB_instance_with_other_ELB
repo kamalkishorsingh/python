@@ -1,0 +1,12 @@
+import boto3
+import json
+import sys
+
+def registration(instance_list,old_elb,new_elb):
+   for i in instance_list:
+       #print instances[i]
+       client = boto3.client('elb')
+       deregister = client.deregister_instances_from_load_balancer(LoadBalancerName=old_elb,Instances=[{'InstanceId': instance_list},])
+       register = client.register_instances_with_load_balancer(LoadBalancerName=new_elb,Instances=[{'InstanceId': instance_list},])
+
+registration(sys.argv[1],sys.argv[2],sys.argv[3])
