@@ -1,0 +1,31 @@
+import boto3
+import json
+import sys
+
+def instance_info(instance_id,i,elb_name):
+   ec2 = boto3.client('ec2')
+   instance = ec2.describe_instances(InstanceIds=[instance_id,],)
+   for tag in instance["Reservations"][0]["Instances"][0]["Tags"]:
+       if tag["Key"] == "Name":
+           print elb_name+"\t"+str(i)+"\t"+tag["Value"]+"\t"+instance_id
+
+def old_elb_info(elb_name):
+   global client
+   client = boto3.client('elb')
+   response = client.describe_load_balancers(
+   LoadBalancerNames=[elb_name,],)
+   #print response['LoadBalancerDescriptions'][0]['Instances']
+   #print "________________________________________"
+   this_data = response['LoadBalancerDescriptions'][0]
+   global instances
+   instances=[]
+   i=0
+   #print this_data
+   for uid in this_data['Instances']:
+       instances.append(str(uid['InstanceId']))
+       instance_info(uid['InstanceId'],i,elb_name)
+       i=i+1
+
+
+print sys.argv[1]
+old_elb_info(sys.argv[1])
