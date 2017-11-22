@@ -1,0 +1,15 @@
+import boto3
+import json
+import sys
+
+def auto_scaling(what_to_do,auto_scale_group_name):
+    client = boto3.client('autoscaling')
+    for i in list:
+        if what_to_do == "suspend":
+            response = client.suspend_processes(AutoScalingGroupName=i)
+        elif what_to_do == "resume":
+            response = client.resume_processes(AutoScalingGroupName=i)
+
+
+list = sys.argv[2].split(",")
+auto_scaling(sys.argv[1],list)
