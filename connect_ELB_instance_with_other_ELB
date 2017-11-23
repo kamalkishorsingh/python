@@ -13,6 +13,7 @@ registration(sys.argv[1],sys.argv[2],sys.argv[3])
 
 
 ===========================================================
+Multiple instance connect -
 
 import boto3
 import json
@@ -22,6 +23,27 @@ def registration(instance_list,old_elb,new_elb):
   for i in instance_list:
       #print instances[i]
       client = boto3.client('elb')
+      deregister = client.deregister_instances_from_load_balancer(LoadBalancerName=old_elb,Instances=[{'InstanceId': i},])
+      register = client.register_instances_with_load_balancer(LoadBalancerName=new_elb,Instances=[{'InstanceId': i},])
+
+#print sys.argv[1]
+list = sys.argv[1].split(",")
+#print list
+registration(list,sys.argv[2],sys.argv[3])
+
+========================================================================
+
+Using Profile option connect multiple instance -
+
+import boto3
+import json
+import sys
+
+def registration(instance_list,old_elb,new_elb):
+  for i in instance_list:
+      #print instances[i]
+      session = boto3.session.Session(profile_name='kamal')
+      client = session.client('elb')
       deregister = client.deregister_instances_from_load_balancer(LoadBalancerName=old_elb,Instances=[{'InstanceId': i},])
       register = client.register_instances_with_load_balancer(LoadBalancerName=new_elb,Instances=[{'InstanceId': i},])
 
