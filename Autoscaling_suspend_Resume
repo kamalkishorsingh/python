@@ -13,3 +13,26 @@ def auto_scaling(what_to_do,auto_scale_group_name):
 
 list = sys.argv[2].split(",")
 auto_scaling(sys.argv[1],list)
+
+
+
+===================================================================
+
+If Using AWS profiling -
+
+import boto3
+import json
+import sys
+
+def auto_scaling(what_to_do,auto_scale_group_name):
+    session = boto3.session.Session(profile_name='kamal')
+    client = session.client('autoscaling')
+    for i in list:
+        if what_to_do == "suspend":
+            response = client.suspend_processes(AutoScalingGroupName=i)
+        elif what_to_do == "resume":
+            response = client.resume_processes(AutoScalingGroupName=i)
+
+
+list = sys.argv[2].split(",")
+auto_scaling(sys.argv[1],list)
