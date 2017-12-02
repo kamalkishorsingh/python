@@ -1,0 +1,94 @@
+import boto3
+import json
+import sys
+import pickle
+
+
+def getListOfInstancesUnderELB(elb):
+  session = boto3.session.Session(profile_name='kamal')
+  client = session.client('elb')
+
+  response = client.describe_load_balancers(LoadBalancerNames=[elb])
+  responseInstanceId = response['LoadBalancerDescriptions'][0]['Instances']
+  #print "Instance Id's are " + str(responseInstanceId) 
+  instanceIDList = [str(v) for lst in responseInstanceId for k, v in lst.items()] 
+  print instanceIDList
+  azInstanceDict = {}
+  for i in instanceIDList:
+    print i
+    client = session.client('ec2')
+    response = client.describe_instances(InstanceIds=[i])
+    availabilityZone = response['Reservations'][0]['Instances'][0]['Placement']['AvailabilityZone']
+    azInstanceDict[availabilityZone] = i 
+  
+  fileInstance_out = open("azInstanceDict.pickle","wb")
+  pickle.dump(azInstanceDict, fileInstance_out)
+  fileInstance_out.close()
+
+  return azInstanceDict
+
+
+
+def register(az,elb):
+
+  pickle_in = open("azInstanceDict.pickle","rb")
+
+  azInstanceDict = pickle.load(pickle_in)
+
+  session = boto3.session.Session(profile_name='kamal')
+  client = session.client('elb')
+
+  response = client.describe_load_balancers(LoadBalancerNames=[elb])
+  responseInstanceId = response['LoadBalancerDescriptions'][0]['Instances']
+  noOfInstancesAfter = len(response['LoadBalancerDescriptions'][0]['Instances'])
+  print "Total instances attached before Registration " + str(noOfInstancesAfter)
+  print "Instance Id's are " + str(responseInstanceId)
+
+  for k,v in azInstanceDict.items():
+    print k
+    print v
+    if k == az:
+      print v 
+      print "Registrig instance: " + str(v)
+      register = client.register_instances_with_load_balancer(LoadBalancerName=elb,Instances=[{'InstanceId': v},])
+
+  response = client.describe_load_balancers(LoadBalancerNames=[elb])
+  responseInstanceId = response['LoadBalancerDescriptions'][0]['Instances']
+  noOfInstancesAfter = len(response['LoadBalancerDescriptions'][0]['Instances'])
+  print "Total instances attached after Registration " + str(noOfInstancesAfter)
+  print "Instance Id's " + str(responseInstanceId)
+
+
+def deregister(az,elb):
+
+  azInstanceDict = getListOfInstancesUnderELB(elb)
+
+  session = boto3.session.Session(profile_name='kamal')
+  client = session.client('elb')
+
+  response = client.describe_load_balancers(LoadBalancerNames=[elb])
+  responseInstanceId = response['LoadBalancerDescriptions'][0]['Instances']
+  noOfInstancesAfter = len(response['LoadBalancerDescriptions'][0]['Instances'])
+  print "Total instances attached before Deregistration " + str(noOfInstancesAfter)
+  print "Instance Id's are " + str(responseInstanceId)
+
+
+  for k,v in azInstanceDict.items():
+    print k
+    print v
+    if k == az:
+      print v 
+      print "Deregistrig instance: " + str(v)
+      deregister = client.deregister_instances_from_load_balancer(LoadBalancerName=elb,Instances=[{'InstanceId': v},])
+  
+  response = client.describe_load_balancers(LoadBalancerNames=[elb])
+  responseInstanceId = response['LoadBalancerDescriptions'][0]['Instances']
+  noOfInstancesAfter = len(response['LoadBalancerDescriptions'][0]['Instances'])
+  print "Total instances attached after Deregistration " + str(noOfInstancesAfter)
+  print "Instance Id's are " + str(responseInstanceId)
+
+
+
+python -c"import elbRegisterDeregister; elbRegisterDeregister.deregister('az-name','fe-load-balancer')"
+
+python -c"import elbRegisterDeregister; elbRegisterDeregister.register('az-name','fe-load-balancer')"
