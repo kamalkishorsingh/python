@@ -1,0 +1,37 @@
+
+import boto3
+import json
+import sys
+
+
+session = boto3.session.Session(profile_name='kamal')
+client = session.client('elb')
+
+response = client.delete_load_balancer(
+LoadBalancerName='testing-be-load-balancer',
+)
+
+response = client.create_load_balancer(
+    Listeners=[
+        {
+            'InstancePort': 8080,
+            'InstanceProtocol': 'HTTP',
+            'LoadBalancerPort': 8080,
+            'Protocol': 'HTTP',
+        },
+        {
+            'InstancePort': 8081,
+            'InstanceProtocol': 'HTTP',
+            'LoadBalancerPort': 8081,
+            'Protocol': 'HTTP',
+        },
+    ],
+    LoadBalancerName='be-load-balancer',
+    SecurityGroups=[
+        'sg-*****',
+    ],
+    Subnets=[
+        'subnet-***','subnet-**',
+    ],
+)
+print(response)

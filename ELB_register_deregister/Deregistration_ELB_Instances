@@ -1,0 +1,12 @@
+import boto3
+import json
+import sys
+
+def deregistration(instance_list,old_elb):
+  for i in instance_list:
+      #print instances[i]
+      session = boto3.session.Session(profile_name='kamal')
+      client = session.client('elb')
+      deregister = client.deregister_instances_from_load_balancer(LoadBalancerName=old_elb,Instances=[{'InstanceId': i},])
+list = sys.argv[1].split(",")
+deregistration(list,sys.argv[2])

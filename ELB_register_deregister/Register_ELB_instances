@@ -1,0 +1,14 @@
+import boto3
+import json
+import sys
+
+def registration(instance_list,new_elb):
+  for i in instance_list:
+      session = boto3.session.Session(profile_name='kamal')
+      client = session.client('elb')
+      register = client.register_instances_with_load_balancer(LoadBalancerName=new_elb,Instances=[{'InstanceId': i},])
+
+
+list = sys.argv[1].split(",")
+
+registration(list,sys.argv[2])
