@@ -24,3 +24,9 @@ then
 aws s3 cp s3://${BUCKET_ID}/${PROJECT_ID}/${APP_ID}/${ENV_ID}/${az}/${RELEASE_ID} ${PATH_ID}
 
 fi
+
+#Script run -
+#sh ${HOME}/scripts/art_cond.sh UPLOAD hhahhhahh test BE Prod ${az} ${RELEASE_ID} ${PATH_ID}
+
+
+#sh ${HOME}/scripts/art_cond.sh REVERT hhahhhahh test BE Prod ${az} ${RELEASE_ID} ${PATH_ID}
