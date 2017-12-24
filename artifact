@@ -1,0 +1,28 @@
+#Create Artifact with id
+
+#!/bin/bash
+S3_ACTION=$1
+BUCKET_ID=$2
+PROJECT_ID=$3
+APP_ID=$4
+ENV_ID=$5
+
+if [ "${S3_ACTION}" = UPLOAD ]; 
+then
+aws s3 rm s3://${BUCKET_ID}/${PROJECT_ID}/${APP_ID}/${ENV_ID}/${az}/${RELEASE_ID}4
+
+aws s3 cp s3://${BUCKET_ID}/${PROJECT_ID}/${APP_ID}/${ENV_ID}/${az}/${RELEASE_ID}3 s3://${BUCKET_ID}/${PROJECT_ID}/${APP_ID}/${ENV_ID}/${az}/${RELEASE_ID}4
+
+aws s3 cp s3://${BUCKET_ID}/${PROJECT_ID}/${APP_ID}/${ENV_ID}/${az}/${RELEASE_ID}2 s3://${BUCKET_ID}/${PROJECT_ID}/${APP_ID}/${ENV_ID}/${az}/${RELEASE_ID}3
+
+aws s3 cp s3://${BUCKET_ID}/${PROJECT_ID}/${APP_ID}/${ENV_ID}/${az}/${RELEASE_ID}1 s3://${BUCKET_ID}/${PROJECT_ID}/${APP_ID}/${ENV_ID}/${az}/${RELEASE_ID}2
+
+aws s3 cp s3://${BUCKET_ID}/${PROJECT_ID}/${APP_ID}/${ENV_ID}/${az}/${RELEASE_ID} s3://${BUCKET_ID}/${PROJECT_ID}/${APP_ID}/${ENV_ID}/${az}/${RELEASE_ID}1
+
+aws s3 cp /tmp/hi s3://${BUCKET_ID}/${PROJECT_ID}/${APP_ID}/${ENV_ID}/${az}/${RELEASE_ID}
+
+elif [ "${S3_ACTION}" = REVERT ];
+then
+aws s3 cp s3://${BUCKET_ID}/${PROJECT_ID}/${APP_ID}/${ENV_ID}/${az}/${RELEASE_ID} ${PATH_ART}
+
+fi
