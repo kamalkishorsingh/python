@@ -1,0 +1,26 @@
+import boto3
+import json
+import sys
+import time
+def status(volume__id):
+        response = client.describe_volumes(VolumeIds=[volume__id,])
+        return response["Volumes"][0]["State"]
+
+snapshot_id = sys.argv[1]
+instance_id = sys.argv[2]
+print snapshot_id
+print instance_id
+session = boto3.Session(profile_name='volume')
+client = session.client('ec2')
+response = client.create_volume(AvailabilityZone='us-east-1d',SnapshotId= snapshot_id,VolumeType='gp2',TagSpecifications=[{'ResourceType': 'volume','Tags': [{'Key': 'Name','Value': 'Mongo_restoration'},]},])
+#print(response)
+volume_id = str(response["VolumeId"])
+print(volume_id)
+#volume_idi=sys.argv[1]
+print status(volume_id)
+while(str(status(volume_id))!="available"):
+        time.sleep(10)
+print status(volume_id)
+#client = boto3.client('ec2')
+response2 = client.attach_volume(Device='/dev/sdf',InstanceId=instance_id,VolumeId= volume_id)
+print "attached"
